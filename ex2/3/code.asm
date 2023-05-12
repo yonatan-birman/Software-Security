@@ -87,37 +87,52 @@ begin:
     ; allocate space for parameters
     sub esp, 16
 
-    ; get address of NtQuerySystemTime
-    push 'meSy'
-    push 'stem'
-    push 'TimQ'
+    ; get address of NtQu eryS yste mTim e
+    xor ebx, ebx
+    mov bl, 'e'
+    push ebx
+    push 'mTim'
+    push 'yste'
+    push 'eryS'
+    push 'NtQu'
     mov eax, esp
     call GetExportByName
 
     ; call NtQuerySystemTime
+    sub esp, 8
+    
     push esp
     call eax
-	
-	; calculate current year
-    mov ecx, [esp]
-    mov ebx, [esp+4]
-    mov eax, ebx
-    mov edx, 0
-	mov ebx, 600000000
+    
+    ; calculate current year
+    pop eax
+    pop edx
+    
+    mov ebx, 599999999
+    inc ebx
     div ebx ; divide by 10^8
-	mov ebx, 525600
-    ; mov edx, 0
+    mov ebx, 0x1f0507ff
+    inc ebx
+    bswap ebx
+    inc ebx
+    xor edx, edx
     div ebx ; divide by minutes in a year
-    add eax, 1601 ; add offset for year 0
+    add ax, 1601 ; add offset for year 0
 
+    
     ; prepare format string for printf
-    push eax
-    push '%d'
-    mov eax, esp
+	xor ebx, ebx
+	mov bx, '%d'
+    push ebx
+    mov ebx, esp
+
 
     ; call printf
     push eax
-    mov eax, 0x772F5DF0 ; address of printf
+    push ebx
+    mov eax, 0x30113fff ; address of printf
+    inc eax
+    bswap eax
     call eax
 
     ; clean up stack and exit
